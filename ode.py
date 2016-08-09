@@ -1,7 +1,7 @@
 import math
 import matplotlib.pyplot as plt
 
-def rats(y, t):
+def basic_ode(y, t):
     #plt.plot(t, y, ko)
     a = 0.01
     omega = 2.0 * math.pi/365.0

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from ode_rats import rats
+from ode import basic_ode
 from scipy.integrate import odeint
 
 # Initial  conditions
@@ -10,7 +10,7 @@ y0 = 2.0
 tt = np.linspace(0, 364, 365)
 
 # Solve the ODE
-yy = odeint ( rats, y0, tt )
+yy = odeint ( basic_ode, y0, tt )
 
 plt.figure(1)
 plt.plot(tt, yy, '.')
