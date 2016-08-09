@@ -1,8 +1,19 @@
 import math
-import matplotlib.pyplot as plt
 
-def basic_ode(y, t):
-    #plt.plot(t, y, ko)
-    a = 0.01
-    omega = 2.0 * math.pi/365.0
-    return a * y * ( 1 + math.sin(omega*t) )
+def basic_ode(x, t, lam, beta, gamma1, gamma2, gamma3, k_alpha, k_mu, suppression):
+    S1 = x[0]
+    S2 = x[1]
+    I1 = x[2]
+    I2 = x[3]
+    R  = x[4]
+
+    alpha = -k_alpha * (I2/(I1+I2) - suppression)
+    mu = -k_mu * (S2-I1)
+
+    dS1 = beta * (S1+S2+I1+I2) - (mu+gamma1)*S1
+    dS2 = mu*S1 - (gamma1+lam)*S2
+    dI1 = lam*S2 - (gamma2+alpha)*I1
+    dI2 = alpha*I1 - gamma3*I2
+    dR = gamma1*(S1+S2) + gamma2*I1 + gamma3*I2
+
+    return [dS1, dS2, dI1, dI2, dR]
