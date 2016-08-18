@@ -10,12 +10,20 @@ from scipy.optimize import fsolve # To solve for initial conditions
 firstYear = 2015
 nYears = 35
 
+SUS_NO_RISK = 0
+SUS_RISK = 1
+INF_UNSUPPRESSED = 2
+INF_SUPPRESSED = 3
+NEW_INFECTIONS = 4
+NEW_DEATHS = 5
+NEW_HIV_DEATHS = 6
+
 # Initial  conditions
 def initial_condition_equations(x, population, prevalence, suppression):
-    S1 = x[0]
-    S2 = x[1]
-    I1 = x[2]
-    I2 = x[3]
+    S1 = x[SUS_NO_RISK]
+    S2 = x[SUS_RISK]
+    I1 = x[INF_UNSUPPRESSED]
+    I2 = x[INF_SUPPRESSED]
 
     e1 = sum(x) - population
     e2 = (I1 + I2) / (S1 + S2 + I1 + I2) - prevalence
@@ -66,13 +74,13 @@ for yi,year in enumerate(range(firstYear, firstYear+nYears)):
     xp = Xt[-1,:]
 
     # Save and reset new infections counter
-    new_infections[yi] = xp[4]
-    new_deaths[yi] = xp[5]
-    new_hiv_deaths[yi] = xp[6]
+    new_infections[yi] = xp[NEW_INFECTIONS]
+    new_deaths[yi] = xp[NEW_DEATHS]
+    new_hiv_deaths[yi] = xp[NEW_HIV_DEATHS]
     Td[yi] = Tt[-1]
-    xp[4] = 0
-    xp[5] = 0
-    xp[6] = 0
+    xp[NEW_INFECTIONS] = 0
+    xp[NEW_DEATHS] = 0
+    xp[NEW_HIV_DEATHS] = 0
 
 #X = odeint(basic_ode, x0, T, args=(lam, beta, gamma1, gamma2, gamma3, k_alpha, k_mu, suppression))
 
@@ -141,7 +149,7 @@ fig = plt.figure(4)
 ax = fig.add_subplot(111)
 ax.yaxis.set_major_formatter(y_formatter)
 
-plt.plot(T, (diagnosed+on_treatment) * (X[:,2] + X[:,3]) )
+plt.plot(T, (diagnosed*on_treatment) * (X[:,INF_UNSUPPRESSED] + X[:,INF_SUPPRESSED]) )
 
 ax.yaxis.set_major_formatter(y_formatter)
 plt.xlabel( 'Time [years]' )
@@ -154,21 +162,21 @@ fig = plt.figure(5)
 
 ax = fig.add_subplot(231)
 ax.yaxis.set_major_formatter(y_formatter)
-ax.plot(T, (X[:,2]+X[:,3]) / (X[:,0]+X[:,1] + X[:,2]+X[:,3]) )
+ax.plot(T, (X[:,INF_UNSUPPRESSED]+X[:,INF_SUPPRESSED]) / (X[:,SUS_NO_RISK]+X[:,SUS_RISK] + X[:,INF_UNSUPPRESSED]+X[:,INF_SUPPRESSED]) )
 ax.plot( 2015, 0.222, 'ro' )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'HIV Prevalence' )
 
 ax = fig.add_subplot(232)
 ax.yaxis.set_major_formatter(y_formatter)
-ax.plot(T, 100 * lam*X[:,1] / (X[:,0]+X[:,1]) )
+ax.plot(T, 100 * lam*X[:,SUS_RISK] / (X[:,SUS_NO_RISK]+X[:,SUS_RISK]) )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'HIV Incidence Rate (%)' )
 plt.tight_layout()
 
 ax = fig.add_subplot(233)
 ax.yaxis.set_major_formatter(y_formatter)
-ax.plot(T, X[:,2]+X[:,3] )
+ax.plot(T, X[:,INF_UNSUPPRESSED]+X[:,INF_SUPPRESSED] )
 ax.plot(2015, 350000, 'ro' )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'PLHIV' )
