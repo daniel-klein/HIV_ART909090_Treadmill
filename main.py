@@ -1,3 +1,5 @@
+# Data points from http://www.avert.org/professionals/hiv-around-world/sub-saharan-africa/botswana
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
@@ -28,6 +30,7 @@ prevalence = 0.222
 diagnosed = 0.88
 on_treatment = 0.88
 vl_suppressed = 0.90
+
 print 'Adults on ART', diagnosed*on_treatment
 suppression = diagnosed * on_treatment * vl_suppressed
 
@@ -51,6 +54,7 @@ x0 = np.append(x0, [0,0,0])        # for new infections counter
 xp = x0
 X = x0
 T = firstYear
+Td = np.zeros(nYears)
 new_infections = np.zeros(nYears)
 new_deaths = np.zeros(nYears)
 new_hiv_deaths = np.zeros(nYears)
@@ -65,6 +69,7 @@ for yi,year in enumerate(range(firstYear, firstYear+nYears)):
     new_infections[yi] = xp[4]
     new_deaths[yi] = xp[5]
     new_hiv_deaths[yi] = xp[6]
+    Td[yi] = Tt[-1]
     xp[4] = 0
     xp[5] = 0
     xp[6] = 0
@@ -98,7 +103,7 @@ Pop = np.sum(X[:,0:4], axis=1)
 print Pop[-1]
 plt.plot(T, Pop)
 # Source: https://esa.un.org/unpd/wpp/DataQuery/
-plt.plot( range(firstYear, firstYear+nYears+5, 5), [p*1e3 for p in [1527, 1680, 1841, 2024, 2192, 2347, 2482, 2602]], 'ko')
+plt.plot( range(firstYear, firstYear+nYears+5, 5), [p*1e3 for p in [1527, 1680, 1841, 2024, 2192, 2347, 2482, 2602]], 'ro')
 
 ax.yaxis.set_major_formatter(y_formatter)
 plt.xlabel( 'Time [years]' )
@@ -150,6 +155,7 @@ fig = plt.figure(5)
 ax = fig.add_subplot(231)
 ax.yaxis.set_major_formatter(y_formatter)
 ax.plot(T, (X[:,2]+X[:,3]) / (X[:,0]+X[:,1] + X[:,2]+X[:,3]) )
+ax.plot( 2015, 0.222, 'ro' )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'HIV Prevalence' )
 
@@ -163,25 +169,28 @@ plt.tight_layout()
 ax = fig.add_subplot(233)
 ax.yaxis.set_major_formatter(y_formatter)
 ax.plot(T, X[:,2]+X[:,3] )
+ax.plot(2015, 350000, 'ro' )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'PLHIV' )
 
 ax = fig.add_subplot(234)
 ax.yaxis.set_major_formatter(y_formatter)
-ax.plot(new_infections )
+ax.plot(Td, new_infections )
+ax.plot(2015, 9700, 'ro' )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'New Infections' )
 
 
 ax = fig.add_subplot(235)
 ax.yaxis.set_major_formatter(y_formatter)
-ax.plot(new_deaths )
+ax.plot(Td, new_deaths )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'New Deaths' )
 
 ax = fig.add_subplot(236)
 ax.yaxis.set_major_formatter(y_formatter)
-ax.plot(new_hiv_deaths )
+ax.plot(Td, new_hiv_deaths )
+ax.plot(2015, 3200, 'ro' )
 plt.xlabel( 'Time [years]' )
 plt.ylabel( 'New HIV Deaths' )
 
